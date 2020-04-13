@@ -6,9 +6,7 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-module.exports.getRandomInt = getRandomInt;
-
-module.exports.shuffle = (someArray) => {
+const shuffle = (someArray) => {
   for (let i = someArray.length - 1; i > 0; i--) {
     const randomPosition = Math.floor(Math.random() * i);
     [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
@@ -17,26 +15,35 @@ module.exports.shuffle = (someArray) => {
   return someArray;
 };
 
-module.exports.getPictureFileName = (num) => {
-  const paddedNum = (num + '').padStart(2, '0');
-  return `item${paddedNum}.jpg`
+const getPictureFileName = (num) => {
+  const paddedNum = (num + ``).padStart(2, `0`);
+  return `item${paddedNum}.jpg`;
 };
 
-module.exports.getRandomCategories = (categories) => {
-  if (Array.isArray(categories)) {
-    return Array.from(
+const getRandomCategories = (categories) => {
+  return Array.from(
       new Set(
-        Array.from({
-          length: getRandomInt(1, categories.length - 1)
-        }, () => {
-          return categories[getRandomInt(0, categories.length - 1)]
-        })))
-  } else {
-    throw 'Categories must be of Array type'
-  }
+          Array.from({
+            length: getRandomInt(1, categories.length - 1)
+          }, () => {
+            return getRandomItem(categories);
+          })));
 };
 
-module.exports.getRandomOfferType = (OfferType) => {
-  const keys = Object.keys(OfferType);
-  return keys[Math.floor(Math.random() * keys.length)]
+const getRandomOfferType = (OfferType) => {
+  return getRandomItem(Object.values(OfferType));
 };
+
+const getRandomItem = (arr) => {
+  return arr[getRandomInt(0, arr.length - 1)];
+};
+
+module.exports = {
+  getPictureFileName,
+  getRandomInt,
+  getRandomCategories,
+  getRandomItem,
+  getRandomOfferType,
+  shuffle,
+};
+

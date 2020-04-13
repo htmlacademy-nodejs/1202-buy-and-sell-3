@@ -1,15 +1,14 @@
 'use strict';
 
-const DEFAULT_COUNT = 1;
-const FILE_NAME = `mocks.json`;
-
 const fs = require(`fs`);
+
 const {
   getRandomInt,
   shuffle,
   getPictureFileName,
   getRandomCategories,
   getRandomOfferType,
+  getRandomItem,
 } = require(`./utils`);
 
 const {
@@ -21,27 +20,35 @@ const {
   SumRestrict,
 } = require(`./mocks`);
 
+const {
+  ExitCode
+} = require(`../../constants`);
+
+const FILE_NAME = `mocks.json`;
+const DEFAULT_COUNT = 1;
+
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
     category: getRandomCategories(CATEGORIES),
     description: shuffle(SENTENCES).slice(1, getRandomInt(1, 5)).join(` `),
-    picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
+    picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
+    title: getRandomItem(TITLES),
     type: getRandomOfferType(OfferType),
-    sum: getRandomInt(SumRestrict.min, SumRestrict.max),
+    sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
   }))
 );
 
 module.exports = {
-  name: '--generate',
-  run: function (args) {
+  name: `--generate`,
+  run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer));
 
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
-        return console.error(`Can't write data to file...`);
+        console.error(`Can't write data to file... Error: ${err}`);
+        process.exit(ExitCode.ERROR);
       }
     });
 

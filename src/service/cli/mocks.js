@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   TITLES: [
     `Продам книги Стивена Кинга`,
@@ -30,19 +32,18 @@ module.exports = {
   ],
 
   OfferType: {
-    offer: `offer`,
-    sale: `sale`,
+    OFFER: `offer`,
+    SALE: `sale`,
   },
 
-
   SumRestrict: {
-    min: 1000,
-    max: 100000,
+    MIN: 1000,
+    MAX: 100000,
   },
 
   PictureRestrict: {
-    min: 0,
-    max: 16,
+    MIN: 0,
+    MAX: 16,
   }
 };
 
