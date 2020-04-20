@@ -1,5 +1,14 @@
 'use strict';
 
+const fs = require(`fs`).promises;
+const endOfLine = require(`os`).EOL;
+const chalk = require(`chalk`);
+
+const {
+  ExitCode
+} = require(`../../constants`);
+
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -38,7 +47,21 @@ const getRandomItem = (arr) => {
   return arr[getRandomInt(0, arr.length - 1)];
 };
 
+const getDataFromFile = async (filename) => {
+  let result = [];
+  try {
+    const pathToFile = `${__dirname}/../../../data/${filename}`;
+    const data = await fs.readFile(pathToFile, `utf8`);
+    result = data.split(endOfLine).filter((x) => !!x);
+  } catch (e) {
+    console.error(chalk.red(`Can't read data from file ${filename}... Error: ${e}`));
+    process.exit(ExitCode.ERROR);
+  }
+  return result;
+};
+
 module.exports = {
+  getDataFromFile,
   getPictureFileName,
   getRandomInt,
   getRandomCategories,
