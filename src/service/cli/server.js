@@ -1,6 +1,6 @@
 'use strict';
 const http = require(`http`);
-const fs = require(`fs`).promises;
+const fsPromises = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {sendResponse} = require(`./utils`);
 const {HttpCode} = require(`./../../constants`);
@@ -12,26 +12,23 @@ const onClientConnect = async (request, response) => {
   try {
     switch (request.url) {
       case `/`: {
-        let data = ``;
-        try {
-          const pathToFile = `./${FILE_NAME}`;
-          data = await fs.readFile(pathToFile, `utf8`);
-        } catch (e) {
-          console.error(chalk.red(`Can't read data from file ${FILE_NAME}... Error: ${e}`));
-          sendResponse(response, HttpCode.NOT_FOUND, `Not found`);
-        }
+        const pathToFile = `./${FILE_NAME}`;
+        const data = await fsPromises.readFile(pathToFile, `utf8`);
         const result = JSON.parse(data);
         const titles = result.map((item) => item.title);
         const responseText = `<ul>${titles.map((title) => `<li>${title}</li>`).join(``)}</ul>`;
-        sendResponse(response, HttpCode.OK, responseText);
-        break;
+        return sendResponse(response, HttpCode.OK, responseText);
       }
       default:
-        sendResponse(response, HttpCode.NOT_FOUND, `Not found`);
+        return sendResponse(response, HttpCode.NOT_FOUND, `Not found`);
     }
   } catch (e) {
+    if (e.code === `ENOENT`) {
+      console.error(chalk.red(`${e.path} doesn't exist`));
+      return sendResponse(response, HttpCode.NOT_FOUND, `Not found`);
+    }
     console.error(chalk.red(`Unexpected error: ${e}`));
-    sendResponse(response, HttpCode.INTERNAL_SERVER_ERROR, `Internal server error`);
+    return sendResponse(response, HttpCode.INTERNAL_SERVER_ERROR, `Internal server error`);
   }
 };
 
